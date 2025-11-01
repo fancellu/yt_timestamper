@@ -29,11 +29,14 @@ export function extractVideoId(url: string): string | null {
 }
 
 export async function getTranscript(videoId: string): Promise<TranscriptItem[]> {
+  const isDev = process.env.NODE_ENV !== 'production';
   const originalConsoleError = console.error;
   const originalStderrWrite = process.stderr.write;
   
-  console.error = () => {};
-  process.stderr.write = () => true;
+  if (isDev) {
+    console.error = () => {};
+    process.stderr.write = () => true;
+  }
   
   try {
     const yt = await Innertube.create({ cache: new UniversalCache(false) });
@@ -46,8 +49,10 @@ export async function getTranscript(videoId: string): Promise<TranscriptItem[]> 
       duration: seg.end_ms - seg.start_ms
     })) || [];
   } finally {
-    console.error = originalConsoleError;
-    process.stderr.write = originalStderrWrite;
+    if (isDev) {
+      console.error = originalConsoleError;
+      process.stderr.write = originalStderrWrite;
+    }
   }
 }
 

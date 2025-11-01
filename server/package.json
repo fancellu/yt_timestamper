@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch server.ts",
-    "start": "node --experimental-specifier-resolution=node dist/server.js",
+    "start": "node dist/server.js",
     "build": "tsc",
     "test": "tsx tests/run-tests.ts",
     "test:vitest": "vitest run"
