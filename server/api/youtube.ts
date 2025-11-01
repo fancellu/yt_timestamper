@@ -57,13 +57,11 @@ export async function getTranscript(videoId: string): Promise<TranscriptItem[]> 
 }
 
 export async function getVideoMetadata(videoId: string): Promise<VideoMetadata> {
-  const html = await fetch(`https://www.youtube.com/watch?v=${videoId}`).then(r => r.text());
+  const yt = await Innertube.create({ cache: new UniversalCache(false) });
+  const info = await yt.getInfo(videoId);
   
-  const titleMatch = html.match(/<title>(.+?)<\/title>/);
-  const title = titleMatch ? titleMatch[1].replace(' - YouTube', '') : 'Unknown Title';
-  
-  const durationMatch = html.match(/"lengthSeconds":"(\d+)"/);
-  const seconds = durationMatch ? parseInt(durationMatch[1]) : 0;
+  const title = info.basic_info.title || 'Unknown Title';
+  const seconds = info.basic_info.duration || 0;
   const minutes = Math.floor(seconds / 60);
   const secs = seconds % 60;
   const duration = `${minutes}:${secs.toString().padStart(2, '0')}`;
