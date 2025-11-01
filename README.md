@@ -2,6 +2,18 @@
 
 Search across YouTube video transcripts and jump to specific timestamps. No API key required!
 
+## Live Demo
+
+🚀 **Try it now:** [https://yt-timesamper.onrender.com/](https://yt-timesamper.onrender.com/)
+
+**Quick test:**
+1. Paste this URL: `https://www.youtube.com/watch?v=79MZkur73c4`
+2. Wait for it to load
+3. Search for: `CEO`
+4. Click any timestamp to jump to that moment!
+
+**Note:** First load may take ~30s (free tier cold start). Duration may show as "0:00" on Render due to YouTube rate limiting - this is cosmetic only and doesn't affect functionality. Works perfectly when running locally.
+
 ## Features
 
 - 🎥 **Multi-video support** - Add multiple YouTube videos (regular, Shorts, various URL formats)
@@ -130,6 +142,10 @@ Your app will be live at `https://your-app-name.onrender.com`
 - Single Express server serves both frontend (static files) and backend (API)
 - Frontend makes relative API calls (no CORS needed)
 - Deployed as one unit to Render
+
+## Known Issues
+
+- **Duration shows 0:00 on Render**: YouTube rate-limits duration fetching from datacenter IPs. This is cosmetic only - all core features (transcripts, search, playback) work perfectly. Duration displays correctly when running locally.
 
 ## Notes
 
