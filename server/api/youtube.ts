@@ -28,6 +28,17 @@ export function extractVideoId(url: string): string | null {
   return null;
 }
 
+export function extractPlaylistId(url: string): string | null {
+  const match = url.match(/[?&]list=([^&\n?#]+)/);
+  return match ? match[1] : null;
+}
+
+export async function getPlaylistVideos(playlistId: string): Promise<string[]> {
+  const yt = await Innertube.create({ cache: new UniversalCache(false) });
+  const playlist = await yt.getPlaylist(playlistId);
+  return playlist.videos.map((v: any) => v.id).filter(Boolean);
+}
+
 export async function getTranscript(videoId: string): Promise<TranscriptItem[]> {
   const isDev = process.env.NODE_ENV !== 'production';
   const originalConsoleError = console.error;

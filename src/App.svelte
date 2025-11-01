@@ -49,7 +49,18 @@
     return null;
   }
   
+  function extractPlaylistId(url: string): string | null {
+    const match = url.match(/[?&]list=([^&\n?#]+)/);
+    return match ? match[1] : null;
+  }
+  
   async function addVideo(url: string) {
+    const playlistId = extractPlaylistId(url);
+    if (playlistId) {
+      await addPlaylist(playlistId);
+      return;
+    }
+    
     const videoId = extractVideoId(url);
     if (!videoId) return;
     if (videos.some(v => v.id === videoId)) return;
@@ -77,6 +88,21 @@
     } catch (error) {
       videos = videos.filter(v => v.id !== videoId);
       showError('Failed to load video. Invalid URL or video unavailable.');
+    }
+  }
+  
+  async function addPlaylist(playlistId: string) {
+    try {
+      const response = await fetch(`${API_URL}/api/playlist/${playlistId}/videos`);
+      const { videoIds } = await response.json();
+      
+      for (const videoId of videoIds) {
+        if (!videos.some(v => v.id === videoId)) {
+          await addVideo(`https://www.youtube.com/watch?v=${videoId}`);
+        }
+      }
+    } catch (error) {
+      showError('Failed to load playlist.');
     }
   }
   

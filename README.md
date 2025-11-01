@@ -11,12 +11,14 @@ Search across YouTube video transcripts and jump to specific timestamps. No API 
 2. Wait for it to load
 3. Search for: `CEO`
 4. Click any timestamp to jump to that moment!
+5. For playlists paste `https://www.youtube.com/watch?v=V6Om-kymesc&list=PL3LrMc0CEvcarCS-yyI_lqLmMTd2ccUlt`
 
 **Note:** First load may take ~30s (free tier cold start). Duration may show as "0:00" on Render due to YouTube rate limiting - this is cosmetic only and doesn't affect functionality. Works perfectly when running locally.
 
 ## Features
 
 - 🎥 **Multi-video support** - Add multiple YouTube videos (regular, Shorts, various URL formats)
+- 📝 **Playlist support** - Add entire playlists at once
 - 🔍 **Full-text search** - Search across all video transcripts simultaneously
 - ⏱️ **Instant playback** - Click any result to jump to that exact timestamp
 - 📋 **Export timestamps** - Copy all matching timestamps as YouTube URLs to clipboard
@@ -66,8 +68,8 @@ npm run dev:client
 
 ## Usage
 
-1. **Add videos**: Paste a YouTube URL and click "Add Video"
-   - Supports: `youtube.com/watch?v=...`, `youtu.be/...`, `youtube.com/shorts/...`
+1. **Add videos**: Paste a YouTube URL or playlist and click "Add Video"
+   - Supports: `youtube.com/watch?v=...`, `youtu.be/...`, `youtube.com/shorts/...`, `youtube.com/playlist?list=...`
 2. **Wait for loading**: Video thumbnail, title, and duration will appear
 3. **Search**: Type keywords in the search bar to find matches across all transcripts
 4. **Play**: Click any timestamp result to play the video at that exact moment

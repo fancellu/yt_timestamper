@@ -13,7 +13,7 @@
 <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
   <input 
     bind:value={url}
-    placeholder="Enter YouTube URL..."
+    placeholder="Enter YouTube URL or Playlist..."
     style="flex: 1;"
     onkeydown={(e) => e.key === 'Enter' && handleAdd()}
   />

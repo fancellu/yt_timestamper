@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { extractVideoId, getTranscript, getVideoMetadata } from './api/youtube.js';
+import { extractVideoId, extractPlaylistId, getPlaylistVideos, getTranscript, getVideoMetadata } from './api/youtube.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -41,6 +41,16 @@ app.post('/api/extract-video-id', (req, res) => {
     res.json({ videoId });
   } else {
     res.status(400).json({ error: 'Invalid YouTube URL' });
+  }
+});
+
+app.get('/api/playlist/:playlistId/videos', async (req, res) => {
+  try {
+    const { playlistId } = req.params;
+    const videoIds = await getPlaylistVideos(playlistId);
+    res.json({ videoIds });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch playlist' });
   }
 });
 

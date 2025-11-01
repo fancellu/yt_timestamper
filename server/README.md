@@ -42,6 +42,7 @@ Tests verify:
 - `GET /api/video/:videoId/transcript` - Get video transcript
 - `GET /api/video/:videoId/metadata` - Get video metadata (title, duration)
 - `POST /api/extract-video-id` - Extract video ID from URL
+- `GET /api/playlist/:playlistId/videos` - Get all video IDs from playlist
 - `GET *` - Serves frontend static files (production only)
 
 ## Notes
