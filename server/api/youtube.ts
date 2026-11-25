@@ -68,16 +68,23 @@ export async function getTranscript(videoId: string): Promise<TranscriptItem[]> 
   // Primary: fetch the caption track directly. YouTube's get_transcript endpoint
   // now rejects most requests with FAILED_PRECONDITION, but the IOS client's
   // caption URLs still return json3 without needing a PoToken.
+  let iosError = 'no captions found';
   try {
     const items = await getTranscriptFromCaptionTrack(yt, videoId);
     if (items.length > 0) return items;
   } catch (err) {
-    console.warn(`[transcript] iOS caption fetch failed for ${videoId}, trying get_transcript:`,
-      err instanceof Error ? err.message : err);
+    iosError = err instanceof Error ? err.message : String(err);
   }
+  console.warn(`[transcript] iOS caption fetch failed for ${videoId} (${iosError}), trying get_transcript`);
 
-  const info = await yt.getInfo(videoId);
-  const transcriptData = await info.getTranscript();
+  let transcriptData;
+  try {
+    const info = await yt.getInfo(videoId);
+    transcriptData = await info.getTranscript();
+  } catch (err) {
+    const fallbackError = err instanceof Error ? err.message : String(err);
+    throw new Error(`iOS: ${iosError} | get_transcript: ${fallbackError}`);
+  }
 
   return transcriptData?.transcript?.content?.body?.initial_segments?.map((seg: any) => ({
     text: seg.snippet.text,
@@ -89,7 +96,11 @@ export async function getTranscript(videoId: string): Promise<TranscriptItem[]> 
 async function getTranscriptFromCaptionTrack(yt: Innertube, videoId: string): Promise<TranscriptItem[]> {
   const info = await yt.getBasicInfo(videoId, { client: 'IOS' });
   const tracks = info.captions?.caption_tracks ?? [];
-  if (tracks.length === 0) return [];
+  if (tracks.length === 0) {
+    // Surface why: e.g. LOGIN_REQUIRED "Sign in to confirm you're not a bot" on datacenter IPs
+    const ps = info.playability_status;
+    throw new Error(`no caption tracks (playability: ${ps?.status ?? 'unknown'}${ps?.reason ? ` - ${ps.reason}` : ''})`);
+  }
 
   // Prefer manual English, then auto-generated English, then whatever is first
   const track =
