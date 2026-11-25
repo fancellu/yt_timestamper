@@ -26,6 +26,18 @@ npm run build  # Compile TypeScript
 npm start      # Run production server
 ```
 
+⚠️ **YouTube blocks transcript fetching from cloud hosts.** On Render every YouTube request returns `403`. On Vercel, YouTube answers `LOGIN_REQUIRED` ("Sign in to confirm you're not a bot") with no caption tracks. Run locally, or try your own VPS (may work, not guaranteed). The official Data API v3 can't help: `captions.download` requires OAuth from the video's owner.
+
+### Vercel
+
+`vercel.json` (repo root) runs this server as a Vercel Service mounted at `/api`. Vercel's build is:
+
+```bash
+npm run build:vercel  # esbuild bundles server.ts + all deps into bundle/server.mjs
+```
+
+`vercel-entry.mjs` re-exports that bundle and is the service entrypoint. This works around a Vercel Services packaging issue: the handler lands at the function root but `node_modules` under `server/`, causing `ERR_MODULE_NOT_FOUND` for `express`. `server.ts` exports `app` and skips `app.listen()` when `VERCEL` is set.
+
 ## Testing
 
 ```bash
@@ -58,8 +70,11 @@ Why: YouTube now rejects `get_transcript` with `400 FAILED_PRECONDITION`. Captio
 
 ⚠️ This relies on undocumented YouTube behaviour and may break without warning. If it does, upgrade `youtubei.js` first (requires v18+).
 
+If both methods fail, the 500 response includes a `detail` field with each method's error (e.g. `iOS: no caption tracks (playability: LOGIN_REQUIRED - …) | get_transcript: …`). The same error is logged to the console.
+
 ## Notes
 
 - Uses youtubei.js to fetch transcripts without YouTube API key
-- Suppresses youtubei.js parser warnings for cleaner logs
+- One shared Innertube session, refreshed hourly, to reduce requests to YouTube
+- Suppresses youtubei.js parser warnings (`Log.setLevel(Log.Level.ERROR)`); real errors still logged
 - CORS enabled for local development

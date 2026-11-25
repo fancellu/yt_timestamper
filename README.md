@@ -2,18 +2,28 @@
 
 Search across YouTube video transcripts and jump to specific timestamps. No API key required!
 
-## Live Demo
+## No Live Demo (YouTube Blocks Cloud Hosting)
 
-🚀 **Try it now:** [https://yt-timestamper.onrender.com/](https://yt-timestamper.onrender.com/)
+There is currently **no working hosted version**. The app runs fine on your own machine, but YouTube refuses transcript requests from cloud hosting providers:
 
-**Quick test:**
+- **Render:** every request to YouTube's internal API returns `403 Forbidden`.
+- **Vercel:** YouTube responds with `LOGIN_REQUIRED – "Sign in to confirm you're not a bot"` and returns no captions.
+
+The official **YouTube Data API v3 doesn't help** either. With an API key you can list a video's caption tracks, but downloading captions (`captions.download`) requires OAuth from the video's owner. There is no official way to fetch the transcript of someone else's public video.
+
+**Your options:**
+
+- **Run it locally** (recommended). Requests come from your home IP, which YouTube doesn't block. See [Setup](#setup).
+- **Run it on your own VPS.** This may fare better than the big serverless platforms, since smaller providers' IP ranges are often less aggressively flagged, but it isn't guaranteed: YouTube blocks many datacenter IPs.
+- **Route YouTube requests through a residential proxy** (paid). This is what hosted transcript tools generally rely on. Not implemented here.
+
+**Quick test (locally):**
+
 1. Paste this URL: `https://www.youtube.com/watch?v=79MZkur73c4`
 2. Wait for it to load
 3. Search for: `CEO`
 4. Click any timestamp to jump to that moment!
 5. For playlists paste `https://www.youtube.com/watch?v=V6Om-kymesc&list=PL3LrMc0CEvcarCS-yyI_lqLmMTd2ccUlt`
-
-**Note:** First load may take ~30s (free tier cold start). Duration may show as "0:00" on Render due to YouTube rate limiting - this is cosmetic only and doesn't affect functionality. Works perfectly when running locally.
 
 ## Features
 
@@ -118,6 +128,8 @@ yt-timestamper/
 
 ## Deployment
 
+> ⚠️ Both configs below build and run, but **YouTube blocks transcript fetching from these hosts** (see [No Live Demo](#no-live-demo-youtube-blocks-cloud-hosting)). They're kept for reference, or for use with a residential proxy. For a working setup, run locally or try your own VPS.
+
 ### Deploy to Render (Free)
 
 1. Push your code to GitHub
@@ -133,6 +145,10 @@ Your app will be live at `https://your-app-name.onrender.com`
 - Single deployment for the entire app
 - Free tier spins down after 15 minutes of inactivity (cold start ~30s on first request)
 
+### Deploy to Vercel
+
+`vercel.json` deploys the app as two [Vercel Services](https://vercel.com/docs/services): the Vite frontend, and the Express server under `/api`. The server is bundled into a single file with esbuild (`npm run build:vercel`) and loaded via `server/vercel-entry.mjs`, which works around a Vercel Services packaging issue that otherwise causes `ERR_MODULE_NOT_FOUND` for `express`.
+
 ## Architecture
 
 **Development:**
@@ -147,7 +163,8 @@ Your app will be live at `https://your-app-name.onrender.com`
 
 ## Known Issues
 
-- **Duration shows 0:00 on Render**: YouTube rate-limits duration fetching from datacenter IPs. This is cosmetic only - all core features (transcripts, search, playback) work perfectly. Duration displays correctly when running locally.
+- **Transcripts fail on cloud hosts**: YouTube blocks requests from datacenter IPs (Render: `403`; Vercel: `LOGIN_REQUIRED`, "confirm you're not a bot"). See [No Live Demo](#no-live-demo-youtube-blocks-cloud-hosting). Works when running locally.
+- **Duration shows 0:00 on cloud hosts**: same cause. Duration displays correctly when running locally.
 
 ## How Transcripts Are Fetched (iOS Client Spoofing)
 
