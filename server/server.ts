@@ -20,7 +20,9 @@ app.get('/api/video/:videoId/transcript', async (req, res) => {
     const transcript = await getTranscript(videoId);
     res.json({ transcript });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch transcript' });
+    const detail = error instanceof Error ? error.message : String(error);
+    console.error(`[transcript] ${req.params.videoId} failed:`, error);
+    res.status(500).json({ error: 'Failed to fetch transcript', detail });
   }
 });
 
