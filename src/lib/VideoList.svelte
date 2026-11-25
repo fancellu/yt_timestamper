@@ -1,11 +1,11 @@
 <script lang="ts">
   import type { Video } from '../types';
   
-  let { videos, onremove, onclearall } = $props<{ 
+  let { videos, onremove, onclearall }: { 
     videos: Video[];
     onremove: (id: string) => void;
     onclearall: () => void;
-  }>();
+  } = $props();
 </script>
 
 {#if videos.length > 0}

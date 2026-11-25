@@ -54,7 +54,8 @@ app.get('/api/playlist/:playlistId/videos', async (req, res) => {
   }
 });
 
-app.get('*', (req, res) => {
+// Express 5 requires named wildcards; '{*splat}' also matches the root path '/'
+app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 

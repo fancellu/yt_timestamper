@@ -149,9 +149,19 @@ Your app will be live at `https://your-app-name.onrender.com`
 
 - **Duration shows 0:00 on Render**: YouTube rate-limits duration fetching from datacenter IPs. This is cosmetic only - all core features (transcripts, search, playback) work perfectly. Duration displays correctly when running locally.
 
+## How Transcripts Are Fetched (iOS Client Spoofing)
+
+YouTube's transcript endpoint (`get_transcript`) now rejects most requests with `400 FAILED_PRECONDITION`, so the server no longer relies on it. Instead, it **identifies itself to YouTube as the official iOS app** (`getBasicInfo(videoId, { client: 'IOS' })`) and downloads the caption track directly in `json3` format.
+
+- Caption tracks requested as the iOS client can be downloaded without a PoToken, unlike the web client's tracks, which come back empty.
+- Track preference: manual English captions, then auto-generated English, then the first available track.
+- The old `get_transcript` method is still tried as a fallback if the iOS approach returns nothing.
+
+⚠️ This depends on undocumented YouTube behaviour and may break without warning. If transcripts stop loading, first try upgrading `youtubei.js` in `server/`.
+
 ## Notes
 
 - Videos are stored in sessionStorage and persist across page refreshes
 - Invalid or unavailable videos are automatically rejected with error notification
-- Transcript fetching uses existing YouTube captions (auto-generated or manual)
+- Transcript fetching uses existing YouTube captions (auto-generated or manual), downloaded via iOS client spoofing (see above)
 - No YouTube API key required - uses youtubei.js library

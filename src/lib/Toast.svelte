@@ -1,5 +1,5 @@
 <script lang="ts">
-  let { message, show } = $props<{ message: string; show: boolean }>();
+  let { message, show }: { message: string; show: boolean } = $props();
 </script>
 
 {#if show}

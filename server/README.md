@@ -45,6 +45,19 @@ Tests verify:
 - `GET /api/playlist/:playlistId/videos` - Get all video IDs from playlist
 - `GET *` - Serves frontend static files (production only)
 
+## Transcript Fetching (iOS Client Spoofing)
+
+`getTranscript()` in `api/youtube.ts` **identifies itself to YouTube as the official iOS app**:
+
+1. `yt.getBasicInfo(videoId, { client: 'IOS' })` gets the video's caption tracks.
+2. It picks a track: manual English, then auto-generated English, then the first available.
+3. It downloads the track's `base_url` with `fmt=json3` and maps each caption event to `{ text, offset, duration }` (milliseconds).
+4. If that yields nothing, it falls back to the old `info.getTranscript()` (`get_transcript` endpoint).
+
+Why: YouTube now rejects `get_transcript` with `400 FAILED_PRECONDITION`. Caption tracks requested as the web client come back empty without a PoToken, but tracks requested as the iOS client still download normally.
+
+⚠️ This relies on undocumented YouTube behaviour and may break without warning. If it does, upgrade `youtubei.js` first (requires v18+).
+
 ## Notes
 
 - Uses youtubei.js to fetch transcripts without YouTube API key

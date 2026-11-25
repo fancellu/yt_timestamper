@@ -1,10 +1,10 @@
 <script lang="ts">
   import type { SearchResult } from '../types';
   
-  let { results, onplay } = $props<{ 
+  let { results, onplay }: { 
     results: SearchResult[];
     onplay: (videoId: string, timestamp: number) => void;
-  }>();
+  } = $props();
   
   function formatTime(ms: number): string {
     const seconds = Math.floor(ms / 1000);

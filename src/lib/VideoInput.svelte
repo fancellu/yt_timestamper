@@ -1,6 +1,6 @@
 <script lang="ts">
   let url = $state('');
-  let { onadd } = $props<{ onadd: (url: string) => void }>();
+  let { onadd }: { onadd: (url: string) => void } = $props();
   
   function handleAdd() {
     if (url.trim()) {

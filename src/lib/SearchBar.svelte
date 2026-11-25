@@ -1,6 +1,6 @@
 <script lang="ts">
   let query = $state('');
-  let { onsearch } = $props<{ onsearch: (query: string) => void }>();
+  let { onsearch }: { onsearch: (query: string) => void } = $props();
   
   function handleSearch() {
     onsearch(query);
