@@ -9,7 +9,8 @@
     "server": {
       "root": "server",
       "framework": "express",
-      "entrypoint": "server.ts"
+      "buildCommand": "npm run build:vercel",
+      "entrypoint": "vercel-entry.mjs"
     }
   },
   "rewrites": [
