@@ -1,0 +1,25 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "services": {
+    "yt-timestamper": {
+      "root": ".",
+      "framework": "vite",
+      "buildCommand": "vite build"
+    },
+    "server": {
+      "root": "server",
+      "framework": "express",
+      "entrypoint": "server.ts"
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": { "service": "server" }
+    },
+    {
+      "source": "/(.*)",
+      "destination": { "service": "yt-timestamper" }
+    }
+  ]
+}

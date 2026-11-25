@@ -61,6 +61,11 @@ app.get('/{*splat}', (req, res) => {
   res.sendFile(path.join(__dirname, '../../dist/index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// On Vercel the platform invokes the exported app; elsewhere (local, Render) we listen ourselves
+if (!process.env.VERCEL) {
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+export default app;
